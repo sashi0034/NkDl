@@ -7,7 +7,9 @@ static class EntryPoint
         ProgramArgs programArgs;
         try
         {
-            programArgs = ProgramArgs.Parse(args);
+            programArgs = args.Length == 0
+                ? ProgramArgs.FromStdin()
+                : ProgramArgs.FromParse(args);
         }
         catch (Exception e)
         {

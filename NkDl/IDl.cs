@@ -72,6 +72,7 @@ public class TextFiler
         try
         {
             process.Start();
+            process.WaitForExit();
             Console.WriteLine($"Finished conversion: {azw3Path}");
         }
         catch (Exception e)
