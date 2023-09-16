@@ -48,10 +48,11 @@ public class DlNs : IDl
         await startDownloadAll(title, links);
     }
 
-    private async Task<string> startDownloadAll(string title, string[] links)
+    private async Task startDownloadAll(string title, string[] links)
     {
         var allText = "";
-        string fileUpper = links[0];
+        string fileLower = links[0];
+        string fileUpper = "?";
         try
         {
             for (int i = 0; i < links.Length; ++i)
@@ -59,9 +60,20 @@ public class DlNs : IDl
                 Console.SetCursorPosition(0, Console.CursorTop);
                 Console.Write($"Downloading... {i + 1} / {links.Length}");
 
+                fileUpper = links[i];
                 string next = await downloadStory($"https://ncode.syosetu.com/{_props.NCode}/{links[i]}");
 
                 allText += $"[{_props.NCode}/{links[i]}]\n" + next + "\n";
+
+                if (allText.Length > DlCommon.HugeCharacterLimit)
+                {
+                    // 文字数が多すぎるので、ファイルを分割
+                    Console.WriteLine("\n");
+                    DlCommon.SaveTextFile(DlCommon.GetFilePath(title, fileLower, fileUpper), allText);
+                    if (i != links.Length - 1) fileLower = links[i + 1];
+                    allText = "";
+                }
+
                 await Task.Delay(DlCommon.DownloadInterval);
             }
         }
@@ -69,13 +81,12 @@ public class DlNs : IDl
         {
             Console.WriteLine("\n");
             Console.WriteLine("errored while downloading: " + e.Message);
-            return allText;
+            return;
         }
 
         // ファイル保存
         Console.WriteLine("\n");
-        DlCommon.SaveTextFile(DlCommon.GetFilePath(title, fileUpper, links[^1]), allText);
-        return allText;
+        DlCommon.SaveTextFile(DlCommon.GetFilePath(title, fileLower, fileUpper), allText);
     }
 
     async Task<string> downloadStory(string url)
