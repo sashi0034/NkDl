@@ -18,7 +18,9 @@ static class EntryPoint
 
         try
         {
-            DownloaderFactory.Create(programArgs).Execute();
+            var dl = DownloaderFactory.Create(programArgs);
+            Console.WriteLine("Detected: " + dl.PlatformName);
+            dl.Execute();
         }
         catch (Exception e)
         {
