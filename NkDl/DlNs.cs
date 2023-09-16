@@ -45,10 +45,14 @@ public class DlNs : IDl
             .ToArray();
 
         // ダウンロード
-        await startDownloadAll(title, links);
+        var textFiler = new TextFiler();
+        await startDownloadAll(title, links, textFiler);
+
+        // AZW3へ変換
+        textFiler.ConvertAll();
     }
 
-    private async Task startDownloadAll(string title, string[] links)
+    private async Task startDownloadAll(string title, string[] links, TextFiler textFiler)
     {
         var allText = "";
         string fileLower = links[0];
@@ -69,7 +73,7 @@ public class DlNs : IDl
                 {
                     // 文字数が多すぎるので、ファイルを分割
                     Console.WriteLine("\n");
-                    DlCommon.SaveTextFile(DlCommon.GetFilePath(title, fileLower, fileUpper), allText);
+                    textFiler.Save(DlCommon.GetFilePath(title, fileLower, fileUpper), allText);
                     if (i != links.Length - 1) fileLower = links[i + 1];
                     allText = "";
                 }
@@ -86,7 +90,7 @@ public class DlNs : IDl
 
         // ファイル保存
         Console.WriteLine("\n");
-        DlCommon.SaveTextFile(DlCommon.GetFilePath(title, fileLower, fileUpper), allText);
+        textFiler.Save(DlCommon.GetFilePath(title, fileLower, fileUpper), allText);
     }
 
     async Task<string> downloadStory(string url)
