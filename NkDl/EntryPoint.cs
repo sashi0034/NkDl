@@ -16,6 +16,14 @@ static class EntryPoint
             return;
         }
 
-        Console.WriteLine(programArgs.Url);
+        try
+        {
+            DownloaderFactory.Create(programArgs).Execute();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return;
+        }
     }
 }
