@@ -40,16 +40,56 @@ public class DlNs : IDl
             .Select(match => match.Groups[1].Value)
             .ToArray();
 
+        // ファイルパス決定
+        string filePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            $"{title}_{links[0]}_{links[^1]}.txt");
+
+        // ダウンロード
         var allText = "";
         for (int i = 0; i < links.Length; ++i)
         {
-            allText += downloadStory("https://ncode.syosetu.com/n4006r/" + links[i]);
+            string next = await downloadStory($"https://ncode.syosetu.com/{_props.NCode}/{links[i]}");
+
+            allText += $"[{_props.NCode}/{links[i]}]\n" + next;
+            await Task.Delay(DlCommon.DownloadInterval);
+        }
+
+        // ファイル保存
+        try
+        {
+            File.WriteAllText(filePath, allText);
+            Console.WriteLine("Save: " + filePath);
+        }
+        catch (IOException e)
+        {
+            Console.WriteLine("Save error: " + e.Message);
         }
     }
 
     async Task<string> downloadStory(string url)
     {
-        // TODO
-        return "";
+        var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Chrome");
+        var htmlContent = await httpClient.GetStringAsync(url);
+
+        var htmlDocument = new HtmlDocument();
+        htmlDocument.LoadHtml(htmlContent);
+
+        var divNode = htmlDocument.DocumentNode.SelectSingleNode("//div[@id='novel_honbun']");
+        if (divNode == null) throw new ApplicationException("novel_honbun was not found: " + url);
+
+        // pタグを全て取得
+        string storyText = "";
+        var pNodes = divNode.SelectNodes("./p");
+        if (pNodes == null) throw new ApplicationException("p was not found in novel_honbun: " + url);
+
+        foreach (var pNode in pNodes)
+        {
+            string next = pNode.InnerText;
+            storyText += next.TrimStart() + "\n";
+        }
+
+        return storyText;
     }
 }
