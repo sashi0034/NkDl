@@ -102,12 +102,17 @@ public class DlNs : IDl
         var htmlDocument = new HtmlDocument();
         htmlDocument.LoadHtml(htmlContent);
 
-        var divNode = htmlDocument.DocumentNode.SelectSingleNode("//div[@id='novel_honbun']");
-        if (divNode == null) throw new ApplicationException("novel_honbun was not found: " + url);
+        var bodyNode = htmlDocument.DocumentNode.SelectSingleNode("//div[@id='novel_honbun']");
+        if (bodyNode == null) throw new ApplicationException("novel_honbun was not found: " + url);
+
+        string storyText = "";
+
+        // サブタイトル取得
+        var subtitleNode = htmlDocument.DocumentNode.SelectSingleNode("//p[@class='novel_subtitle']");
+        if (subtitleNode != null) storyText += subtitleNode.InnerHtml + "\n\n";
 
         // pタグを全て取得
-        string storyText = "";
-        var pNodes = divNode.SelectNodes("./p");
+        var pNodes = bodyNode.SelectNodes("./p");
         if (pNodes == null) throw new ApplicationException("p was not found in novel_honbun: " + url);
 
         foreach (var pNode in pNodes)

@@ -10,7 +10,7 @@ public interface IDl
 
 public static class DlCommon
 {
-    public const int HugeCharacterLimit = 150_0000;
+    public const int HugeCharacterLimit = 200_0000;
     public const int DownloadInterval = 300;
 
     public static string GetFilePath(string title, string lower, string upper)
