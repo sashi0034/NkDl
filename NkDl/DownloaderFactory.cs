@@ -10,12 +10,13 @@ public static class DownloaderFactory
         if (url.StartsWith("https://ncode.syosetu.com/"))
         {
             var ncode = Regex.Match(url, @"\/(n\w+)\/?$").Groups[1].Value;
-            return new DlNarou(programArgs, new DlNsProps(ncode));
+            return new DlNarou(programArgs, new DlNarouProps(ncode));
         }
 
         if (url.StartsWith("https://kakuyomu.jp/works/"))
         {
-            // TODO
+            var workId = Regex.Match(url, @"works/(\d+)").Groups[1].Value;
+            return new DlKakuyomu(programArgs, new DlKakuyomuProps(workId));
         }
 
         throw new ArgumentException();

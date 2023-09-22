@@ -1,17 +1,16 @@
-﻿using System.Text.RegularExpressions;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 
 namespace NkDl;
 
-public record DlNsProps(
+public record DlNarouProps(
     string NCode);
 
 public class DlNarou : IDl
 {
     private readonly ProgramArgs _programArgs;
-    private readonly DlNsProps _props;
+    private readonly DlNarouProps _props;
 
-    public DlNarou(ProgramArgs programArgs, DlNsProps props)
+    public DlNarou(ProgramArgs programArgs, DlNarouProps props)
     {
         _programArgs = programArgs;
         _props = props;
@@ -26,75 +25,20 @@ public class DlNarou : IDl
 
     private async Task processAsync()
     {
-        var url = _programArgs.Url;
-        var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Chrome");
-        var htmlContent = await httpClient.GetStringAsync(url);
-
         // タイトル取得
-        var htmlDocument = new HtmlDocument();
-        htmlDocument.LoadHtml(htmlContent);
-        var title = htmlDocument.DocumentNode.SelectSingleNode("//title").InnerText ?? "Unknown";
-
-        Console.WriteLine($"fetched {url} [{title}]");
-
-        // 話数の数字配列を作成
         string linkPattern = _props.NCode + @"/(\d+)/";
-        var links = Regex.Matches(htmlContent, linkPattern)
-            .Select(match => match.Groups[1].Value)
-            .ToArray();
+        var fetched = await DnLdCommon.FetchTitleAndIndexes(_programArgs.Url, linkPattern);
 
-        // ダウンロード
-        var textFiler = new TextFiler();
-        await startDownloadAll(title, links, textFiler);
-
-        // AZW3へ変換
-        textFiler.ConvertAll();
+        await DnLdCommon.ProcessDownload(new DownloadingArgs(
+            Title: fetched.Title,
+            Indexes: fetched.Indexes,
+            StoryDownloader: downloadStory,
+            StoryHeaderMaker: storyLink => $"[{_props.NCode}/{storyLink.Index}]"));
     }
 
-    private async Task startDownloadAll(string title, string[] links, TextFiler textFiler)
+    private async Task<string> downloadStory(StoryIndex index)
     {
-        var allText = "";
-        string fileLower = links[0];
-        string fileUpper = "?";
-        try
-        {
-            for (int i = 0; i < links.Length; ++i)
-            {
-                Console.SetCursorPosition(0, Console.CursorTop);
-                Console.Write($"Downloading... {i + 1} / {links.Length}");
-
-                fileUpper = links[i];
-                string next = await downloadStory($"https://ncode.syosetu.com/{_props.NCode}/{links[i]}");
-
-                allText += $"[{_props.NCode}/{links[i]}]\n" + next + "\n";
-
-                if (allText.Length > DlCommon.HugeCharacterLimit)
-                {
-                    // 文字数が多すぎるので、ファイルを分割
-                    Console.WriteLine("\n");
-                    textFiler.Save(DlCommon.GetFilePath(title, fileLower, fileUpper), allText);
-                    if (i != links.Length - 1) fileLower = links[i + 1];
-                    allText = "";
-                }
-
-                await Task.Delay(DlCommon.DownloadInterval);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("\n");
-            Console.WriteLine("errored while downloading: " + e.Message);
-            return;
-        }
-
-        // ファイル保存
-        Console.WriteLine("\n");
-        textFiler.Save(DlCommon.GetFilePath(title, fileLower, fileUpper), allText);
-    }
-
-    async Task<string> downloadStory(string url)
-    {
+        var url = $"https://ncode.syosetu.com/{_props.NCode}/{index.Index}";
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Chrome");
         var htmlContent = await httpClient.GetStringAsync(url);
