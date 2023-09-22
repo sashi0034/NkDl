@@ -6,12 +6,12 @@ namespace NkDl;
 public record DlNsProps(
     string NCode);
 
-public class DlNs : IDl
+public class DlNarou : IDl
 {
     private readonly ProgramArgs _programArgs;
     private readonly DlNsProps _props;
 
-    public DlNs(ProgramArgs programArgs, DlNsProps props)
+    public DlNarou(ProgramArgs programArgs, DlNsProps props)
     {
         _programArgs = programArgs;
         _props = props;

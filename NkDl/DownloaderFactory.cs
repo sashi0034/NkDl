@@ -10,7 +10,7 @@ public static class DownloaderFactory
         if (url.StartsWith("https://ncode.syosetu.com/"))
         {
             var ncode = Regex.Match(url, @"\/(n\w+)\/?$").Groups[1].Value;
-            return new DlNs(programArgs, new DlNsProps(ncode));
+            return new DlNarou(programArgs, new DlNsProps(ncode));
         }
 
         if (url.StartsWith("https://kakuyomu.jp/works/"))

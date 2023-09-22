@@ -1,6 +1,6 @@
 ﻿namespace NkDl;
 
-public class DlKk : IDl
+public class DlKakuyomu : IDl
 {
     public string PlatformName => "Kakuyomu";
 
