@@ -44,6 +44,7 @@ public static class DnLdCommon
         // 話数の数字配列を作成
         var links = Regex.Matches(htmlContent, linkPattern)
             .Select(match => match.Groups[1].Value)
+            .Distinct()
             .ToArray();
 
         return new ContentTable(title, links);
@@ -75,6 +76,9 @@ public static class DnLdCommon
                 fileUpper = (i + 1).ToString();
                 var storyIndex = new StoryIndex(indexes[i], i);
                 string next = await args.StoryDownloader(storyIndex);
+
+                // 強調表現(・・)を取り除く
+                next = Regex.Replace(next, @"（・*）|\(・*\)", "");
 
                 allText += args.StoryHeaderMaker(storyIndex) + "\n" + next + "\n";
 
