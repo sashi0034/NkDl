@@ -31,9 +31,10 @@ public class DlNarou : IDl
         var fetched = await fetchTitleAndIndexes(_props.Url, _props.NCode);
 
         var downloadRange = _inputStream.ReadDownloadRange(fetched.Indexes.Length);
+        var filename = _inputStream.ReadFileName(fetched.Title);
 
         await DlCommon.ProcessDownload(new DownloadingArgs(
-            Title: fetched.Title,
+            Filename: filename,
             Indexes: fetched.Indexes,
             StoryDownloader: downloadStory,
             StoryHeaderMaker: storyLink => $"[{_props.NCode}/{storyLink.Index}]",

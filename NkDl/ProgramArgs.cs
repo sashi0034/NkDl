@@ -3,7 +3,8 @@
 public record ProgramArgs(
     string Url = "",
     int FirstPage = 1,
-    int LastPage = 0)
+    int LastPage = 0,
+    string NovelTitle = "")
 {
     public const string UsageDescription = @"
 Usage: nkdl <URL> [Options]
@@ -50,6 +51,7 @@ Options:
         {
             "--from" => result with { FirstPage = int.Parse(nextRead()) },
             "--to" => result with { LastPage = int.Parse(nextRead()) },
+            "--title" => result with { NovelTitle = nextRead() },
             _ => throw new ArgumentOutOfRangeException()
         };
     }

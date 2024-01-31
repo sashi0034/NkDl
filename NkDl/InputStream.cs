@@ -70,4 +70,22 @@ public class InputStream
         lastPage = new IntRange(firstPage, pageSize).Clamp(lastPage);
         return lastPage;
     }
+
+    public string ReadFileName(string novelTitle)
+    {
+        if (_programArgs != null)
+        {
+            var name = _programArgs.NovelTitle.IsNullOrWhiteSpace() ? novelTitle : _programArgs.NovelTitle;
+            if (Util.IsValidFileName(name)) return name;
+        }
+
+        while (true)
+        {
+            Console.WriteLine($"Input filename: (Default: {novelTitle})");
+            var name = Console.ReadLine() ?? "";
+            if (name.IsNullOrWhiteSpace()) name = novelTitle;
+            if (Util.IsValidFileName(name)) return name;
+            Console.Error.WriteLine("Invalid file name.");
+        }
+    }
 }

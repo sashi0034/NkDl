@@ -12,7 +12,7 @@ public record ContentTable(string Title, string[] Indexes)
 public record struct StoryIndex(string Index, int Number);
 
 public record DownloadingArgs(
-    string Title,
+    string Filename,
     string[] Indexes,
     Func<StoryIndex, Task<string>> StoryDownloader,
     Func<StoryIndex, string> StoryHeaderMaker,
@@ -83,7 +83,7 @@ public static class DlCommon
 
     public static async Task downloadAsync(DownloadingArgs args, TextFiler textFiler)
     {
-        var title = args.Title;
+        var filename = args.Filename;
         var indexes = args.Indexes;
         var allText = "";
         string fileLower = (args.DownloadRange.Start).ToString();
@@ -108,7 +108,7 @@ public static class DlCommon
                 {
                     // 文字数が多すぎるので、ファイルを分割
                     Console.WriteLine("\n");
-                    textFiler.Save(GetFilePath(title, fileLower, fileUpper), allText);
+                    textFiler.Save(GetFilePath(filename, fileLower, fileUpper), allText);
                     if (i != indexes.Length - 1) fileLower = (i + 2).ToString();
                     allText = "";
                 }
@@ -125,7 +125,7 @@ public static class DlCommon
 
         // ファイル保存
         Console.WriteLine("\n");
-        textFiler.Save(GetFilePath(title, fileLower, fileUpper), allText);
+        textFiler.Save(GetFilePath(filename, fileLower, fileUpper), allText);
     }
 }
 

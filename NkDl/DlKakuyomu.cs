@@ -34,9 +34,10 @@ public class DlKakuyomu : IDl
         var indexCount = fetched.Indexes.Length;
 
         var downloadRange = _inputStream.ReadDownloadRange(fetched.Indexes.Length);
+        var filename = _inputStream.ReadFileName(fetched.Title.Replace(UnnecessaryText, "").TrimStart().TrimEnd());
 
         await DlCommon.ProcessDownload(new DownloadingArgs(
-            Title: fetched.Title.Replace(UnnecessaryText, "").TrimStart().TrimEnd(),
+            Filename: filename,
             Indexes: fetched.Indexes,
             StoryDownloader: downloadStory,
             StoryHeaderMaker: storyLink => $"[episodes/{storyLink.Index} ({storyLink.Number + 1} / {indexCount})]",
