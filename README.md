@@ -1,8 +1,8 @@
 # NkDl
-Novel downloader
+Novel downloader for 小説家になろう or カクヨム.
 
-# Usage
+# Requrement
 
-Install Caliber in advance to use `book-convert.exe`
+- .NET 6.0
 
-Input the URL (小説家になろう or カクヨム) you want to download and the download will start.
+- Install [Caliber](https://calibre-ebook.com/download_windows) (Using `book-convert.exe` for AZW3 conversion)
