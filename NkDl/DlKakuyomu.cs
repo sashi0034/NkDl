@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace NkDl;
 
@@ -29,8 +30,8 @@ public class DlKakuyomu : IDl
     private async Task processAsync()
     {
         // タイトル取得
-        string linkPattern = _props.WorkId + @"/episodes/(\d+)";
-        var fetched = await DlCommon.FetchTitleAndIndexes(_props.Url, linkPattern);
+        // string linkPattern = _props.WorkId + @"/episodes/(\d+)";
+        var fetched = await fetchTitleAndIndexes(_props.Url);
         var indexCount = fetched.Indexes.Length;
 
         var downloadRange = _inputStream.ReadDownloadRange(fetched.Indexes.Length);
@@ -42,6 +43,32 @@ public class DlKakuyomu : IDl
             StoryDownloader: downloadStory,
             StoryHeaderMaker: storyLink => $"[episodes/{storyLink.Index} ({storyLink.Number + 1} / {indexCount})]",
             DownloadRange: downloadRange));
+    }
+
+    public static async Task<ContentTable> fetchTitleAndIndexes(string url)
+    {
+        var htmlContent = await DlCommon.FetchHtmlContent(url);
+
+        // タイトル取得
+        var htmlDocument = new HtmlDocument();
+        htmlDocument.LoadHtml(htmlContent);
+        var title = htmlDocument.DocumentNode.SelectSingleNode("//title").InnerText ?? "Unknown";
+
+        Console.WriteLine($"Fetched {url} [{title}]");
+
+        string pattern = @"{""__typename"":""Episode"",""id"":""(\d+)"",""title"":""(.*?)"",""publishedAt"":";
+
+        // 話数の数字配列を作成
+        var matches = Regex.Matches(htmlContent, pattern);
+        var links = new List<string>();
+        foreach (Match match in matches)
+        {
+            if (match.Success == false) continue;
+            links.Add(match.Groups[1].Value);
+            // Console.WriteLine(match.Groups[2].Value);
+        }
+
+        return new ContentTable(title, links.ToArray());
     }
 
     private async Task<string> downloadStory(StoryIndex index)

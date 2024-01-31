@@ -50,26 +50,6 @@ public static class DlCommon
         }
     }
 
-    public static async Task<ContentTable> FetchTitleAndIndexes(string url, string linkPattern)
-    {
-        var htmlContent = await FetchHtmlContent(url);
-
-        // タイトル取得
-        var htmlDocument = new HtmlDocument();
-        htmlDocument.LoadHtml(htmlContent);
-        var title = htmlDocument.DocumentNode.SelectSingleNode("//title").InnerText ?? "Unknown";
-
-        Console.WriteLine($"Fetched {url} [{title}]");
-
-        // 話数の数字配列を作成
-        var links = Regex.Matches(htmlContent, linkPattern)
-            .Select(match => match.Groups[1].Value)
-            .Distinct()
-            .ToArray();
-
-        return new ContentTable(title, links);
-    }
-
     public static async Task ProcessDownload(DownloadingArgs args)
     {
         Console.WriteLine($"Start download [{args.DownloadRange.Start}, {args.DownloadRange.End}]");
