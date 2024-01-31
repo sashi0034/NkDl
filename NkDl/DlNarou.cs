@@ -28,8 +28,7 @@ public class DlNarou : IDl
     private async Task processAsync()
     {
         // タイトル取得
-        string linkPattern = _props.NCode + @"/(\d+)/";
-        var fetched = await fetchTitleAndIndexes(_props.Url, linkPattern);
+        var fetched = await fetchTitleAndIndexes(_props.Url, _props.NCode);
 
         var downloadRange = _inputStream.ReadDownloadRange(fetched.Indexes.Length);
 
@@ -41,8 +40,9 @@ public class DlNarou : IDl
             DownloadRange: downloadRange));
     }
 
-    public static async Task<ContentTable> fetchTitleAndIndexes(string topUrl, string linkPattern)
+    public static async Task<ContentTable> fetchTitleAndIndexes(string topUrl, string ncode)
     {
+        string linkPattern = ncode + @"/(\d+)/";
         string title = "Unknown Title";
         var allLinks = new List<string>();
 
@@ -72,6 +72,7 @@ public class DlNarou : IDl
 
             Console.WriteLine($"Fetched {links.Count} from {pageUrl}");
 
+            if (htmlContent.Contains($"{ncode}/?p={i + 1}") == false) break;
             if (links.Count == 0) break;
         }
 
