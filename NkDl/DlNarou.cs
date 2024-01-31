@@ -31,11 +31,14 @@ public class DlNarou : IDl
         string linkPattern = _props.NCode + @"/(\d+)/";
         var fetched = await fetchTitleAndIndexes(_props.Url, linkPattern);
 
+        var downloadRange = _inputStream.ReadDownloadRange(fetched.Indexes.Length);
+
         await DlCommon.ProcessDownload(new DownloadingArgs(
             Title: fetched.Title,
             Indexes: fetched.Indexes,
             StoryDownloader: downloadStory,
-            StoryHeaderMaker: storyLink => $"[{_props.NCode}/{storyLink.Index}]"));
+            StoryHeaderMaker: storyLink => $"[{_props.NCode}/{storyLink.Index}]",
+            DownloadRange: downloadRange));
     }
 
     public static async Task<ContentTable> fetchTitleAndIndexes(string topUrl, string linkPattern)

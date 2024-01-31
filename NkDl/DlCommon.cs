@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using NkDl.Utils;
 
 namespace NkDl;
 
@@ -14,7 +15,8 @@ public record DownloadingArgs(
     string Title,
     string[] Indexes,
     Func<StoryIndex, Task<string>> StoryDownloader,
-    Func<StoryIndex, string> StoryHeaderMaker);
+    Func<StoryIndex, string> StoryHeaderMaker,
+    IntRange DownloadRange);
 
 public static class DlCommon
 {
@@ -70,6 +72,8 @@ public static class DlCommon
 
     public static async Task ProcessDownload(DownloadingArgs args)
     {
+        Console.WriteLine($"Start download [{args.DownloadRange.Start}, {args.DownloadRange.End}]");
+
         var textFilter = new TextFiler();
         await downloadAsync(args, textFilter);
 
@@ -86,10 +90,10 @@ public static class DlCommon
         string fileUpper = "?";
         try
         {
-            for (int i = 0; i < indexes.Length; ++i)
+            for (int i = args.DownloadRange.Start; i <= args.DownloadRange.End; ++i)
             {
                 Console.SetCursorPosition(0, Console.CursorTop);
-                Console.Write($"Downloading... {i + 1} / {indexes.Length}");
+                Console.Write($"Downloading... {i + 1}");
 
                 fileUpper = (i + 1).ToString();
                 var storyIndex = new StoryIndex(indexes[i], i);

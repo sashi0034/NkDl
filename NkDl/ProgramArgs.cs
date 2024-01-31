@@ -1,19 +1,30 @@
 ﻿namespace NkDl;
 
 public record ProgramArgs(
-    string Url = "")
+    string Url = "",
+    int FirstPage = 0,
+    int LastPage = -1)
 {
     public const string UsageDescription = @"
-Usage: nkdl <url>
+Usage: nkdl <URL> [Options]
+Options:
+    --from      First page to download
+    --to        Last page to download
 ";
 
     public static ProgramArgs FromParse(string[] arg)
     {
         var result = new ProgramArgs();
 
-        for (int i = 0; i < arg.Length; ++i)
+        for (int i = 0; i < arg.Length;)
         {
-            result = processNext(arg, result, i);
+            string nextRead()
+            {
+                i++;
+                return arg[i - 1];
+            }
+
+            result = processNext(i, nextRead, result);
         }
 
         if (string.IsNullOrWhiteSpace(result.Url)) throw new ArgumentException("URL not specified");
@@ -21,15 +32,25 @@ Usage: nkdl <url>
         return result;
     }
 
-    private static ProgramArgs processNext(string[] arg, ProgramArgs result, int nextIndex)
+    private static ProgramArgs processNext(int nextIndex, Func<string> nextRead, ProgramArgs result)
     {
-        string next = arg[nextIndex];
-
-        if (nextIndex == arg.Length - 1 && next.StartsWith("-") == false)
+        if (nextIndex == 0)
         {
-            result = result with { Url = arg[0] };
+            return result with { Url = nextRead() };
         }
+        else
+        {
+            return processNextOption(nextRead, result);
+        }
+    }
 
-        return result;
+    private static ProgramArgs processNextOption(Func<string> nextRead, ProgramArgs result)
+    {
+        return nextRead() switch
+        {
+            "--from" => result with { FirstPage = int.Parse(nextRead()) },
+            "--to" => result with { LastPage = int.Parse(nextRead()) },
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }

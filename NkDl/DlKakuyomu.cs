@@ -33,11 +33,14 @@ public class DlKakuyomu : IDl
         var fetched = await DlCommon.FetchTitleAndIndexes(_props.Url, linkPattern);
         var indexCount = fetched.Indexes.Length;
 
+        var downloadRange = _inputStream.ReadDownloadRange(fetched.Indexes.Length);
+
         await DlCommon.ProcessDownload(new DownloadingArgs(
             Title: fetched.Title.Replace(UnnecessaryText, "").TrimStart().TrimEnd(),
             Indexes: fetched.Indexes,
             StoryDownloader: downloadStory,
-            StoryHeaderMaker: storyLink => $"[episodes/{storyLink.Index} ({storyLink.Number + 1} / {indexCount})]"));
+            StoryHeaderMaker: storyLink => $"[episodes/{storyLink.Index} ({storyLink.Number + 1} / {indexCount})]",
+            DownloadRange: downloadRange));
     }
 
     private async Task<string> downloadStory(StoryIndex index)
