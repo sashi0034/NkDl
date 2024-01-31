@@ -29,10 +29,10 @@ public class DlKakuyomu : IDl
     {
         // タイトル取得
         string linkPattern = _props.WorkId + @"/episodes/(\d+)";
-        var fetched = await DnLdCommon.FetchTitleAndIndexes(_programArgs.Url, linkPattern);
+        var fetched = await DlCommon.FetchTitleAndIndexes(_programArgs.Url, linkPattern);
         var indexCount = fetched.Indexes.Length;
 
-        await DnLdCommon.ProcessDownload(new DownloadingArgs(
+        await DlCommon.ProcessDownload(new DownloadingArgs(
             Title: fetched.Title.Replace(UnnecessaryText, "").TrimStart().TrimEnd(),
             Indexes: fetched.Indexes,
             StoryDownloader: downloadStory,

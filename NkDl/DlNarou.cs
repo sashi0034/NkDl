@@ -30,7 +30,7 @@ public class DlNarou : IDl
         string linkPattern = _props.NCode + @"/(\d+)/";
         var fetched = await fetchTitleAndIndexes(_programArgs.Url, linkPattern);
 
-        await DnLdCommon.ProcessDownload(new DownloadingArgs(
+        await DlCommon.ProcessDownload(new DownloadingArgs(
             Title: fetched.Title,
             Indexes: fetched.Indexes,
             StoryDownloader: downloadStory,
@@ -46,7 +46,7 @@ public class DlNarou : IDl
         for (int i = 1;; ++i)
         {
             var pageUrl = $"{topUrl}/?p={i}";
-            var htmlContent = await DnLdCommon.TryFetchHtmlContent(pageUrl);
+            var htmlContent = await DlCommon.TryFetchHtmlContent(pageUrl);
             if (htmlContent == null) break;
 
             var htmlDocument = new HtmlDocument();
@@ -77,7 +77,7 @@ public class DlNarou : IDl
     private async Task<string> downloadStory(StoryIndex index)
     {
         var url = $"https://ncode.syosetu.com/{_props.NCode}/{index.Index}";
-        var htmlContent = await DnLdCommon.FetchHtmlContent(url);
+        var htmlContent = await DlCommon.FetchHtmlContent(url);
 
         var htmlDocument = new HtmlDocument();
         htmlDocument.LoadHtml(htmlContent);

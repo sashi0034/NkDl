@@ -16,7 +16,7 @@ public record DownloadingArgs(
     Func<StoryIndex, Task<string>> StoryDownloader,
     Func<StoryIndex, string> StoryHeaderMaker);
 
-public static class DnLdCommon
+public static class DlCommon
 {
     public const int HugeCharacterLimit = 200_0000;
     public const int DownloadInterval = 300;
