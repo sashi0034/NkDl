@@ -4,16 +4,17 @@ using HtmlAgilityPack;
 namespace NkDl;
 
 public record DlNarouProps(
+    string Url,
     string NCode);
 
 public class DlNarou : IDl
 {
-    private readonly ProgramArgs _programArgs;
+    private readonly InputStream _inputStream;
     private readonly DlNarouProps _props;
 
-    public DlNarou(ProgramArgs programArgs, DlNarouProps props)
+    public DlNarou(InputStream inputStream, DlNarouProps props)
     {
-        _programArgs = programArgs;
+        _inputStream = inputStream;
         _props = props;
     }
 
@@ -28,7 +29,7 @@ public class DlNarou : IDl
     {
         // タイトル取得
         string linkPattern = _props.NCode + @"/(\d+)/";
-        var fetched = await fetchTitleAndIndexes(_programArgs.Url, linkPattern);
+        var fetched = await fetchTitleAndIndexes(_props.Url, linkPattern);
 
         await DlCommon.ProcessDownload(new DownloadingArgs(
             Title: fetched.Title,

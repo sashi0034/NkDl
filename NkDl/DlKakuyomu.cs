@@ -3,16 +3,17 @@
 namespace NkDl;
 
 public record DlKakuyomuProps(
+    string Url,
     string WorkId);
 
 public class DlKakuyomu : IDl
 {
-    private readonly ProgramArgs _programArgs;
+    private readonly InputStream _inputStream;
     private readonly DlKakuyomuProps _props;
 
-    public DlKakuyomu(ProgramArgs programArgs, DlKakuyomuProps props)
+    public DlKakuyomu(InputStream inputStream, DlKakuyomuProps props)
     {
-        _programArgs = programArgs;
+        _inputStream = inputStream;
         _props = props;
     }
 
@@ -29,7 +30,7 @@ public class DlKakuyomu : IDl
     {
         // タイトル取得
         string linkPattern = _props.WorkId + @"/episodes/(\d+)";
-        var fetched = await DlCommon.FetchTitleAndIndexes(_programArgs.Url, linkPattern);
+        var fetched = await DlCommon.FetchTitleAndIndexes(_props.Url, linkPattern);
         var indexCount = fetched.Indexes.Length;
 
         await DlCommon.ProcessDownload(new DownloadingArgs(
@@ -55,7 +56,9 @@ public class DlKakuyomu : IDl
         string storyText = "";
 
         // サブタイトル取得
-        var subtitleNode = htmlDocument.DocumentNode.SelectSingleNode("//p[@class='widget-episodeTitle js-vertical-composition-item']");
+        var subtitleNode =
+            htmlDocument.DocumentNode.SelectSingleNode(
+                "//p[@class='widget-episodeTitle js-vertical-composition-item']");
         if (subtitleNode != null) storyText += subtitleNode.InnerHtml.Replace("- カクヨム", "") + "\n\n";
 
         // pタグを全て取得

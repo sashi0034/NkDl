@@ -7,13 +7,6 @@ public record ProgramArgs(
 Usage: nkdl <url>
 ";
 
-    public static ProgramArgs FromStdin()
-    {
-        Console.WriteLine("Input URL for download novels:");
-        var url = Console.ReadLine();
-        return new ProgramArgs(Url: url);
-    }
-
     public static ProgramArgs FromParse(string[] arg)
     {
         var result = new ProgramArgs();

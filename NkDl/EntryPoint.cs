@@ -4,12 +4,12 @@ static class EntryPoint
 {
     static void Main(string[] args)
     {
-        ProgramArgs programArgs;
+        InputStream programArgs;
         try
         {
             programArgs = args.Length == 0
-                ? ProgramArgs.FromStdin()
-                : ProgramArgs.FromParse(args);
+                ? new InputStream(null)
+                : new InputStream(ProgramArgs.FromParse(args));
         }
         catch (Exception e)
         {
@@ -28,7 +28,6 @@ static class EntryPoint
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return;
         }
     }
 }
