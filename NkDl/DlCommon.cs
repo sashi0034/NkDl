@@ -86,14 +86,14 @@ public static class DlCommon
         var title = args.Title;
         var indexes = args.Indexes;
         var allText = "";
-        string fileLower = "1";
+        string fileLower = (args.DownloadRange.Start + 1).ToString();
         string fileUpper = "?";
         try
         {
             for (int i = args.DownloadRange.Start; i <= args.DownloadRange.End; ++i)
             {
                 Console.SetCursorPosition(0, Console.CursorTop);
-                Console.Write($"Downloading... {i + 1}");
+                Console.Write($"Downloading... {i}");
 
                 fileUpper = (i + 1).ToString();
                 var storyIndex = new StoryIndex(indexes[i], i);
