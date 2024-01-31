@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace NkDl;
 
@@ -27,7 +28,7 @@ public class DlNarou : IDl
     {
         // タイトル取得
         string linkPattern = _props.NCode + @"/(\d+)/";
-        var fetched = await DnLdCommon.FetchTitleAndIndexes(_programArgs.Url, linkPattern);
+        var fetched = await fetchTitleAndIndexes(_programArgs.Url, linkPattern);
 
         await DnLdCommon.ProcessDownload(new DownloadingArgs(
             Title: fetched.Title,
@@ -36,12 +37,47 @@ public class DlNarou : IDl
             StoryHeaderMaker: storyLink => $"[{_props.NCode}/{storyLink.Index}]"));
     }
 
+    public static async Task<ContentTable> fetchTitleAndIndexes(string topUrl, string linkPattern)
+    {
+        string title = "Unknown Title";
+        var allLinks = new List<string>();
+
+        // 1ページ目から順にメタ情報を取得していく
+        for (int i = 1;; ++i)
+        {
+            var pageUrl = $"{topUrl}/?p={i}";
+            var htmlContent = await DnLdCommon.TryFetchHtmlContent(pageUrl);
+            if (htmlContent == null) break;
+
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(htmlContent);
+
+            if (i == 1)
+            {
+                // タイトル取得
+                title = htmlDocument.DocumentNode.SelectSingleNode("//title").InnerText ?? "Unknown";
+                Console.WriteLine($"Fetched title: {title}");
+            }
+
+            // リンク取得
+            var links = Regex.Matches(htmlContent, linkPattern)
+                .Select(match => match.Groups[1].Value)
+                .Distinct()
+                .ToList();
+            allLinks.AddRange(links);
+
+            Console.WriteLine($"Fetched {links.Count} from {pageUrl}");
+
+            if (links.Count == 0) break;
+        }
+
+        return new ContentTable(title, allLinks.ToArray());
+    }
+
     private async Task<string> downloadStory(StoryIndex index)
     {
         var url = $"https://ncode.syosetu.com/{_props.NCode}/{index.Index}";
-        var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Chrome");
-        var htmlContent = await httpClient.GetStringAsync(url);
+        var htmlContent = await DnLdCommon.FetchHtmlContent(url);
 
         var htmlDocument = new HtmlDocument();
         htmlDocument.LoadHtml(htmlContent);

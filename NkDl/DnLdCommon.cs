@@ -28,11 +28,29 @@ public static class DnLdCommon
             $"{title}_{lower}_{upper}.txt");
     }
 
-    public static async Task<ContentTable> FetchTitleAndIndexes(string url, string linkPattern)
+    public static async Task<string> FetchHtmlContent(string url)
     {
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Chrome");
         var htmlContent = await httpClient.GetStringAsync(url);
+        return htmlContent;
+    }
+
+    public static async Task<string?> TryFetchHtmlContent(string url)
+    {
+        try
+        {
+            return await FetchHtmlContent(url);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    public static async Task<ContentTable> FetchTitleAndIndexes(string url, string linkPattern)
+    {
+        var htmlContent = await FetchHtmlContent(url);
 
         // タイトル取得
         var htmlDocument = new HtmlDocument();
