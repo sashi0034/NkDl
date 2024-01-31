@@ -2,8 +2,8 @@
 
 public record ProgramArgs(
     string Url = "",
-    int FirstPage = 0,
-    int LastPage = -1)
+    int FirstPage = 1,
+    int LastPage = 0)
 {
     public const string UsageDescription = @"
 Usage: nkdl <URL> [Options]
