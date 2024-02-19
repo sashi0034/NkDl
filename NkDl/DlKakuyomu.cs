@@ -98,8 +98,8 @@ public class DlKakuyomu : IDl
 
         foreach (var pNode in pNodes)
         {
-            string next = pNode.InnerText;
-            storyText += next.TrimStart() + "\n\n";
+            string next = pNode.InnerText.TrimStart();
+            storyText += next + "\n";
         }
 
         return storyText;
