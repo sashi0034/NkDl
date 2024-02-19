@@ -142,12 +142,13 @@ public class TextFiler
 
     private static void convertTxtToAzw3(string txtPath)
     {
+        var title = Path.GetFileName(Path.ChangeExtension(txtPath, ""));
         var azw3Path = Path.ChangeExtension(txtPath, ".azw3");
 
         ProcessStartInfo psi = new ProcessStartInfo
         {
             FileName = "ebook-convert.exe",
-            Arguments = "\"" + txtPath + "\" \"" + azw3Path + "\"",
+            Arguments = "\"" + txtPath + "\" \"" + azw3Path + "\" --title " + title,
             CreateNoWindow = false
         };
 

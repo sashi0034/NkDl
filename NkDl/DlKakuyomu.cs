@@ -99,7 +99,7 @@ public class DlKakuyomu : IDl
         foreach (var pNode in pNodes)
         {
             string next = pNode.InnerText;
-            storyText += next.TrimStart() + "\n";
+            storyText += next.TrimStart() + "\n\n";
         }
 
         return storyText;
