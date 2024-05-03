@@ -24,6 +24,7 @@ static class EntryPoint
             Console.WriteLine("Detected: " + dl.PlatformName);
             dl.Execute();
             Console.WriteLine("Finished all tasks");
+            Console.In.ReadLine();
         }
         catch (Exception e)
         {
