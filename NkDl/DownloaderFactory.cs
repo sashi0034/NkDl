@@ -13,6 +13,12 @@ public static class DownloaderFactory
             return new DlNarou(inputStream, new DlNarouProps(url, ncode));
         }
 
+        if (url.StartsWith("https://novel18.syosetu.com/"))
+        {
+            var ncode = Regex.Match(url, @"\/(n\w+)\/?$").Groups[1].Value;
+            return new DlNarou(inputStream, new DlNarouProps(url, ncode));
+        }
+
         if (url.StartsWith("https://kakuyomu.jp/works/"))
         {
             var workId = Regex.Match(url, @"works/(\d+)").Groups[1].Value;

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Net;
 using System.Text.RegularExpressions;
-using HtmlAgilityPack;
 using NkDl.Utils;
 
 namespace NkDl;
@@ -32,8 +32,18 @@ public static class DlCommon
 
     public static async Task<string> FetchHtmlContent(string url)
     {
-        var httpClient = new HttpClient();
+        // CookieContainer と HttpClientHandler の設定
+        var cookieContainer = new CookieContainer();
+        using var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
+        using var httpClient = new HttpClient(handler);
+
+        // ユーザーエージェントの設定
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Chrome");
+
+        // クッキーの追加
+        cookieContainer.Add(new Uri("https://novel18.syosetu.com"), new Cookie("over18", "yes"));
+
+        // HTTP GETリクエストの送信とHTMLコンテンツの取得
         var htmlContent = await httpClient.GetStringAsync(url);
         return htmlContent;
     }
