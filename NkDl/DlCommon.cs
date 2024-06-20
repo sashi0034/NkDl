@@ -38,7 +38,8 @@ public static class DlCommon
         using var httpClient = new HttpClient(handler);
 
         // ユーザーエージェントの設定
-        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Chrome");
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
 
         // クッキーの追加
         cookieContainer.Add(new Uri("https://novel18.syosetu.com"), new Cookie("over18", "yes"));
@@ -80,6 +81,7 @@ public static class DlCommon
         string fileUpper = "?";
         try
         {
+            var random = new Random();
             for (int i = args.DownloadRange.Start - 1; i <= args.DownloadRange.End - 1; ++i)
             {
                 Console.SetCursorPosition(0, Console.CursorTop);
@@ -103,7 +105,13 @@ public static class DlCommon
                     allText = "";
                 }
 
-                await Task.Delay(DownloadInterval);
+                // 適当な時間を待機
+                await Task.Delay(random.NextInt64(0, 10) switch
+                {
+                    (<= 4) => DownloadInterval,
+                    (<= 8) => (DownloadInterval * random.Next(2, 4)),
+                    _ => DownloadInterval * random.Next(2, 16)
+                });
             }
         }
         catch (Exception e)
