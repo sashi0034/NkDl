@@ -1,5 +1,6 @@
 # NkDl
-Novel downloader for 小説家になろう or カクヨム.
+
+Web Novel Downloader
 
 # Requrement
 
