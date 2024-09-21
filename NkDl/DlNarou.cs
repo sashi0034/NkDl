@@ -41,7 +41,7 @@ public class DlNarou : IDl
             DownloadRange: downloadRange));
     }
 
-    public static async Task<ContentTable> fetchTitleAndIndexes(string topUrl, string ncode)
+    private static async Task<ContentTable> fetchTitleAndIndexes(string topUrl, string ncode)
     {
         string linkPattern = ncode + @"/(\d+)/";
         string title = "Unknown Title";
@@ -88,17 +88,17 @@ public class DlNarou : IDl
         var htmlDocument = new HtmlDocument();
         htmlDocument.LoadHtml(htmlContent);
 
-        var bodyNode = htmlDocument.DocumentNode.SelectSingleNode("//div[@id='novel_honbun']");
+        var bodyNode = htmlDocument.DocumentNode.SelectSingleNode("//div[@class='p-novel__body']");
         if (bodyNode == null) throw new ApplicationException("novel_honbun was not found: " + url);
 
         string storyText = "";
 
         // サブタイトル取得
-        var subtitleNode = htmlDocument.DocumentNode.SelectSingleNode("//p[@class='novel_subtitle']");
+        var subtitleNode = htmlDocument.DocumentNode.SelectSingleNode("//h1[contains(@class, 'p-novel__title')]");
         if (subtitleNode != null) storyText += subtitleNode.InnerHtml + "\n\n";
 
         // pタグを全て取得
-        var pNodes = bodyNode.SelectNodes("./p");
+        var pNodes = bodyNode.SelectNodes(".//p");
         if (pNodes == null) throw new ApplicationException("p was not found in novel_honbun: " + url);
 
         foreach (var pNode in pNodes)
