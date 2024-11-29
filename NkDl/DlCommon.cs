@@ -166,7 +166,7 @@ public class TextFiler
         ProcessStartInfo psi = new ProcessStartInfo
         {
             FileName = "ebook-convert.exe",
-            Arguments = "\"" + txtPath + "\" \"" + azw3Path + "\" --title " + title,
+            Arguments = "\"" + txtPath + "\" \"" + azw3Path + "\" --title " + "\"" + title + "\"",
             CreateNoWindow = false
         };
 
