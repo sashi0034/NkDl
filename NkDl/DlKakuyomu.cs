@@ -35,7 +35,7 @@ public class DlKakuyomu : IDl
         var indexCount = fetched.Indexes.Length;
 
         var downloadRange = _inputStream.ReadDownloadRange(fetched.Indexes.Length);
-        var filename = _inputStream.ReadFileName(fetched.Title.Replace(UnnecessaryText, "").TrimStart().TrimEnd());
+        var filename = _inputStream.ReadFileName(getDefaultTitle(fetched).TrimStart().TrimEnd());
 
         await DlCommon.ProcessDownload(new DownloadingArgs(
             Filename: filename,
@@ -43,6 +43,18 @@ public class DlKakuyomu : IDl
             StoryDownloader: downloadStory,
             StoryHeaderMaker: storyLink => $"[episodes/{storyLink.Index} ({storyLink.Number + 1} / {indexCount})]",
             DownloadRange: downloadRange));
+    }
+
+    private static string getDefaultTitle(ContentTable fetched)
+    {
+        var title = fetched.Title.Replace(UnnecessaryText, "");
+        int parenthesisStart = title.LastIndexOf("（", StringComparison.CurrentCulture);
+        if (parenthesisStart > 1 && title.TrimEnd().EndsWith("）"))
+        {
+            title = title.Substring(0, parenthesisStart);
+        }
+
+        return title;
     }
 
     public static async Task<ContentTable> fetchTitleAndIndexes(string url)
