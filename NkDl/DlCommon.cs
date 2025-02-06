@@ -119,7 +119,7 @@ public static class DlCommon
                     _ => DownloadInterval * random.Next(2, 16)
                 });
 
-                if (args.LongSleep) await Task.Delay(2000); // FIXME?
+                if (args.LongSleep) await Task.Delay(3000); // FIXME?
             }
         }
         catch (Exception e)
@@ -150,9 +150,10 @@ public static class DlCommon
                 errorCount++;
                 if (errorCount >= 5) throw;
 
-                Console.WriteLine("Retrying...");
+                int waitSeconds = (errorCount + Random.Shared.Next(0, 2)) * 15;
+                Console.WriteLine("Retrying... in " + waitSeconds + " seconds");
 
-                await Task.Delay(errorCount * 15 * 1000);
+                await Task.Delay(waitSeconds * 1000);
             }
         }
     }
