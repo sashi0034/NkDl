@@ -16,7 +16,8 @@ public record DownloadingArgs(
     string[] Indexes,
     Func<StoryIndex, Task<string>> StoryDownloader,
     Func<StoryIndex, string> StoryHeaderMaker,
-    IntRange DownloadRange);
+    IntRange DownloadRange,
+    bool IsEnglish = false);
 
 public static class DlCommon
 {
@@ -96,7 +97,8 @@ public static class DlCommon
 
                 allText += args.StoryHeaderMaker(storyIndex) + "\n" + next + "\n";
 
-                if (allText.Length > HugeCharacterLimit)
+                int hugeCharacterLimit = HugeCharacterLimit * (args.IsEnglish ? 2 : 1);
+                if (allText.Length > hugeCharacterLimit)
                 {
                     // 文字数が多すぎるので、ファイルを分割
                     Console.WriteLine("\n");
