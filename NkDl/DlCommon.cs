@@ -17,7 +17,8 @@ public record DownloadingArgs(
     Func<StoryIndex, Task<string>> StoryDownloader,
     Func<StoryIndex, string> StoryHeaderMaker,
     IntRange DownloadRange,
-    bool IsEnglish = false);
+    bool IsEnglish = false,
+    bool LongSleep = false);
 
 public static class DlCommon
 {
@@ -91,7 +92,9 @@ public static class DlCommon
 
                 fileUpper = (i + 1).ToString();
                 var storyIndex = new StoryIndex(indexes[i], i);
-                string next = await args.StoryDownloader(storyIndex);
+
+                // 本文をダウンロード
+                var next = await tryDownloadStory(args, storyIndex);
 
                 // 強調表現(・・)を取り除く
                 next = Regex.Replace(next, @"（・*）|\(・*\)", "");
@@ -115,6 +118,8 @@ public static class DlCommon
                     (<= 8) => (DownloadInterval * random.Next(2, 4)),
                     _ => DownloadInterval * random.Next(2, 16)
                 });
+
+                if (args.LongSleep) await Task.Delay(2000); // FIXME?
             }
         }
         catch (Exception e)
@@ -127,6 +132,29 @@ public static class DlCommon
         // ファイル保存
         Console.WriteLine("\n");
         textFiler.Save(GetFilePath(filename, fileLower, fileUpper), allText);
+    }
+
+    private static async Task<string> tryDownloadStory(DownloadingArgs args, StoryIndex storyIndex)
+    {
+        int errorCount = 0;
+        while (true)
+        {
+            try
+            {
+                return await args.StoryDownloader(storyIndex);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("\nErrored: " + e.Message);
+
+                errorCount++;
+                if (errorCount >= 5) throw;
+
+                Console.WriteLine("Retrying...");
+
+                await Task.Delay(errorCount * 15 * 1000);
+            }
+        }
     }
 }
 

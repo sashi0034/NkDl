@@ -45,6 +45,7 @@ public class DlScribbleHub : IDl
             StoryHeaderMaker: storyLink =>
                 $"[{getChapterLinkTitle(storyLink.Index)} ({storyLink.Number + 1} / {indexCount})]",
             DownloadRange: downloadRange,
+            true,
             true));
     }
 
