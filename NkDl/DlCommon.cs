@@ -44,6 +44,7 @@ public static class DlCommon
 
         // クッキーの追加
         cookieContainer.Add(new Uri("https://novel18.syosetu.com"), new Cookie("over18", "yes"));
+        cookieContainer.Add(new Uri("https://www.scribblehub.com"), new Cookie("toc_sorder", "asc"));
 
         // HTTP GETリクエストの送信とHTMLコンテンツの取得
         var htmlContent = await httpClient.GetStringAsync(url);
