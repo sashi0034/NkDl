@@ -18,7 +18,7 @@ public record DownloadingArgs(
     Func<StoryIndex, string> StoryHeaderMaker,
     IntRange DownloadRange,
     bool IsEnglish = false,
-    bool LongSleep = false);
+    int AdditionalSleep = 0);
 
 public static class DlCommon
 {
@@ -119,7 +119,7 @@ public static class DlCommon
                     _ => DownloadInterval * random.Next(2, 16)
                 });
 
-                if (args.LongSleep) await Task.Delay(3000); // FIXME?
+                if (args.AdditionalSleep > 0) await Task.Delay(args.AdditionalSleep);
             }
         }
         catch (Exception e)

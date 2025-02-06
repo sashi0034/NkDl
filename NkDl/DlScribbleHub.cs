@@ -46,7 +46,7 @@ public class DlScribbleHub : IDl
                 $"[{getChapterLinkTitle(storyLink.Index)} ({storyLink.Number + 1} / {indexCount})]",
             DownloadRange: downloadRange,
             true,
-            true));
+            4000));
     }
 
     private static string getChapterLinkTitle(string uri)
