@@ -41,9 +41,11 @@ public class InputStream
 
     private static int inputFirstPage(int pageSize)
     {
-        int firstPage = 1;
+        int firstPage;
         while (true)
         {
+            firstPage = 1;
+
             Console.WriteLine($"Input download start page: [1, {pageSize}] (Default: {firstPage})");
             var input = Console.ReadLine();
             if (input.IsNullOrWhiteSpace()) break;
@@ -57,9 +59,11 @@ public class InputStream
 
     private static int inputLastPage(int pageSize, int firstPage)
     {
-        int lastPage = pageSize;
+        int lastPage;
         while (true)
         {
+            lastPage = pageSize;
+
             Console.WriteLine($"Input download end page: [{firstPage}, {pageSize}] (Default: {lastPage})");
             var input = Console.ReadLine();
             if (input.IsNullOrWhiteSpace()) break;
