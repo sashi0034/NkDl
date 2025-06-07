@@ -27,9 +27,10 @@ public static class DlCommon
 
     public static string GetFilePath(string title, string lower, string upper)
     {
+        title = title.Trim().Replace(" ", "-").Replace("/", "-");
         return Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads",
-            $"{title}_{lower}_{upper}.txt");
+            $"{title}-{lower}-{upper}.txt");
     }
 
     public static async Task<string> FetchHtmlContent(string url)

@@ -23,6 +23,7 @@ static class EntryPoint
             var dl = DownloaderFactory.Create(programArgs);
             Console.WriteLine("Detected: " + dl.PlatformName);
             dl.Execute();
+            Console.WriteLine("-----------------------------------------------");
             Console.WriteLine("Finished all tasks");
             Console.In.ReadLine();
         }
